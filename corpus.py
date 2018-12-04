@@ -20,4 +20,4 @@ class Corpus():
 
 if __name__ == '__main__':
     corpus = Corpus('extracted.xml')
-    print(corpus.get_text('all-valmanifest-2006'))
+    print(corpus.get_text('v-partiprogram-1921'))

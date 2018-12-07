@@ -1,0 +1,34 @@
+python3 random_indexing.py -c -co cleaned_example.txt
+
+Neighbors for Harry: [('Harry', 0.0), ('Hagrid', 0.06), ('Snape', 0.07), ('Dumbledore', 0.07), ('Neville', 0.08)]
+Neighbors for Gryffindor: [('Gryffindor', 0.0), ('Slytherin', 0.09), ('house', 0.12), ('school', 0.13), ('library', 0.14)]
+Neighbors for chair: [('chair', 0.0), ('seat', 0.06), ('cauldron', 0.11), ('hand', 0.12), ('bag', 0.12)]
+Neighbors for wand: [('wand', 0.0), ('head', 0.06), ('hand', 0.07), ('eyes', 0.09), ('fingers', 0.09)]
+Neighbors for good: [('good', 0.0), ('such', 0.13), ('long', 0.13), ('nice', 0.13), ('bad', 0.13)]
+Neighbors for enter: [('enter', 0.0), ('leave', 0.11), ('take', 0.13), ('break', 0.13), ('use', 0.13)]
+Neighbors for on: [('on', 0.0), ('in', 0.03), ('from', 0.03), ('into', 0.04), ('over', 0.05)]
+Neighbors for school: [('school', 0.0), ('house', 0.06), ('point', 0.07), ('castle', 0.08), ('class', 0.08)]
+
+10D 8NZ: snabbare random indexing (25 -> 8), betydligt mindre relevanta resultat
+	Färre dimensioner -> mer 'noise', finns för få dimensioner för de semantiska särdragen och identiska randomvektorer
+
+4000D 200NZ: långsammare RI (25 -> 41), nästan exakt samma resultat
+	Verkar finnas en PointOfDimReturns där fler dimensioner inte behövs för att täcka alla särdrag
+
+2000D 1000NZ: myycket långsammare RI (25 -> 107), nästan exakt samma resultat
+2000D 1NZ: snabbare RI (25 -> 16), nästan exakt samma resultat
+	Givet tillräckligt många dimensioner för antalet unika ord (och tillräckligt mycket träningsdata), borde inte antalet nonzero spela så stor roll
+
+L2 R2: 22s RI, liknande resultat med högre cosinusavstånd
+L10 R10: 41s RI, mindre relevanta resultat men lägre cosinusavstånd
+	Större fönster -> fler summerade randomvektorer -> längre kontextvektorer -> större avstånd mellan kontextvektorer -> kNN får relativt sett lägre avstånd
+	MEN: Jättestora fönster -> hela meningen som kontext (hur relevant är ord i-10 resp ord i+10 för ord i?) -> vanliga ord påverkar mer
+
+L3 R10: 33s RI, liknande resultat (men fler Harry-pronomen), lägre cosinusavstånd
+L10 R3: 32s RI, liknande resultat (utan Harry-pronomen), lägre cosinusavstånd
+	Pronomen kommer efter personnamn i satser (ex "Harry did thing A, then he did B") -> större högerkontext tar med fler pronomen
+
+	
+euclidean: Neighbors for Harry: [('Harry', 0.0), ('he', 35324.02), ('it', 41183.73), ('Ron', 45432.99), ('his', 45604.32)]
+	Icke-normerade vektorer -> vanligt förekommande ord påverkar mycket mer än sällsynta -> pronomen rankas högre
+	Bättre att normera vektorer (-> cosine) 

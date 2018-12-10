@@ -99,10 +99,6 @@ class RandomIndexing(object):
             except ValueError:
                 return []
 
-#            vds = []
-#            for word in self.__vocab:
-#                vds.append((word,distance))
-
         return output
 
 
@@ -113,20 +109,6 @@ class RandomIndexing(object):
         if word in self.__vocab:
             return self.__cv[word]
         return None
-
-
-    # def vocab_exists(self):
-    #     return os.path.exists(self.tempname)
-    #
-    #
-    # def read_vocabulary(self):
-    #     vocab_exists = self.vocab_exists()
-    #     if vocab_exists:
-    #         with open(self.tempname) as f:
-    #             for line in f:
-    #                 self.__vocab.add(line.strip())
-    #     self.__i2w = list(self.__vocab)
-    #     return vocab_exists
 
 
     def write_vocabulary(self):
@@ -141,13 +123,6 @@ class RandomIndexing(object):
         Main function call to train word embeddings
         """
         spinner = Halo(spinner='arrow3')
-
-        # if self.vocab_exists():
-        #     spinner.start(text="Reading vocabulary...")
-        #     start = time.time()
-        #     ri.read_vocabulary()
-        #     spinner.succeed(text="Read vocabulary in {}s. Size: {} words".format(round(time.time() - start, 2), ri.vocabulary_size))
-        # else:
         spinner.start(text="Building vocabulary...")
         start = time.time()
         self.build_vocabulary()
@@ -204,6 +179,6 @@ if __name__ == '__main__':
                         #print("Neighbors for {} in {}: {}".format(w, model_name, n))
                         print('Neighbors for {} in {}'.format(w, model_name))
                         for i, pair in enumerate(n):
-                            print(str(i+1) + " " + str(pair[0]) + "\t\t" + str(pair[1]))
-                    print('\n')
+                            print(str(i+1) + " " + str(pair[0]) + "\t\t\t" + str(pair[1]))
+                    print('')
             text = input('> ')

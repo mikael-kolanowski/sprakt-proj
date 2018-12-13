@@ -4,6 +4,7 @@ import time
 import string
 import numpy as np
 import tempfile
+from nltk.corpus import stopwords
 from halo import Halo
 from itertools import combinations
 from scipy.spatial.distance import cosine
@@ -153,19 +154,35 @@ def compare_distance(word1, word2, ris):
     return output
 
 def automatic_testing(models):
-    pop_size = 500
+    pop_size = 20
+    test_results = {key: [[] for key in models.keys()] for key in models.keys()}
     common = set.intersection(*[model.vocab for model in models.values()])
-    distances = []
+    common = filter(lambda t: t is not None,
+        [word if word not in stopwords.words('swedish') else None for word in common])
+
     sample = np.random.choice(list(common), pop_size)
-    for i in range(int(pop_size / 2)):
-        index1, index2 = np.random.randint(pop_size, size=2)
-        distances.append(compare_distance(sample[index1], sample[index2], models.values()))
-    for comb in combinations(models.keys(), r=2):
-        distlist = []
-        for distance in distances:
-            name_to_index = {name:i for i, name in enumerate(models.keys())}
-            distlist.append(abs(distance[name_to_index[comb[0]]] - distance[name_to_index[comb[1]]]))
-        print('Average distance between {} and {}: {}'.format(comb[0], comb[1], np.mean(distlist)))
+    for word in sample:
+        print(word)
+        for model_name, model in models.items():
+            nearest_word, distance = model.find_nearest([word], k=1)[0][0]
+            for i, model in enumerate(models.values()):
+                wv_nearest = model.get_word_vector(nearest_word)
+                wv_test = model.get_word_vector(word)
+                if wv_nearest is None:
+                    continue
+                test_distance = np.abs(cosine(wv_test, wv_nearest) - distance)
+                if test_results[model_name][i] is []:
+                    test_tesults[model_name][i] = [test_distance]
+                else:
+                    test_results[model_name][i].append(test_distance)
+
+
+    for model1_name in models.keys():
+        for i, model2_name in enumerate(models.keys()):
+            if model1_name != model2_name:
+                print('Average distance between {} and {}: {}'.format(model1_name,
+                    model2_name,
+                    np.mean(test_results[model1_name][i])))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Random Indexing word embeddings')
